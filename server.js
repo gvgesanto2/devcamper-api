@@ -6,11 +6,11 @@ const bodyParser = require("body-parser");
 const errorHandler = require("./middleware/errorHandler");
 const connectDB = require("./config/db");
 
-// Route files
-const bootcampRoutes = require("./routes/bootcamp.routes");
-
 // Load env vars
 dotenv.config({ path: "./config/config.env" });
+
+// Route files
+const bootcampRoutes = require("./routes/bootcamp.routes");
 
 // Conenct to database
 connectDB();
