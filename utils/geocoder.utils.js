@@ -7,9 +7,6 @@ const options = {
   formatter: null,
 };
 
-console.log(options);
-console.log(process.env.PORT);
-
 const geocoder = NodeGeocoder(options);
 
 module.exports = geocoder;
