@@ -1,7 +1,14 @@
-const Course = require("../models/course.model");
-const Bootcamp = require("../models/bootcamp.model");
-const ErrorResponse = require("../utils/ErrorResponse");
-const asyncHandler = require("../middleware/asyncHandler");
+const Course = require('../models/course.model');
+const Bootcamp = require('../models/bootcamp.model');
+const ErrorResponse = require('../utils/ErrorResponse');
+const asyncHandler = require('../middleware/asyncHandler');
+const findResourceById = require('../middleware/findResourceById');
+
+// Load course by the ID and append to req
+exports.courseById = findResourceById(Course, {
+  path: 'bootcamp',
+  select: 'name description'
+});
 
 // @desc Get courses
 // @route GET /api/v1/courses
@@ -16,8 +23,8 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
     });
   } else {
     query = Course.find().populate({
-      path: "bootcamp",
-      select: "name description"
+      path: 'bootcamp',
+      select: 'name description'
     });
   }
 
@@ -34,14 +41,7 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
 // @route GET /api/v1/courses/:id
 // @access Public
 exports.getCourse = asyncHandler(async (req, res, next) => {
-  const course = await Course.findById(req.params.id).populate({
-    path: "bootcamp",
-    select: "name description"
-  });
-
-  if (!course) {
-    return next(new ErrorResponse("No course with this id"), 404);
-  }
+  const course = req.resource;
 
   res.status(200).json({
     success: true,
@@ -56,7 +56,7 @@ exports.addCourse = asyncHandler(async (req, res, next) => {
   const bootcamp = await Bootcamp.findById(req.params.bootcampId);
 
   if (!bootcamp) {
-    return next(new ErrorResponse("No bootcamp with this id"), 404);
+    return next(new ErrorResponse('No bootcamp with this id'), 404);
   }
 
   req.body.bootcamp = req.params.bootcampId;
@@ -73,12 +73,6 @@ exports.addCourse = asyncHandler(async (req, res, next) => {
 // @route PUT /api/v1/courses/:id
 // @access Private
 exports.updateCourse = asyncHandler(async (req, res, next) => {
-  let course = await Course.findById(req.params.id);
-
-  if (!course) {
-    return next(new ErrorResponse("No course with this id"), 404);
-  }
-
   course = await Course.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true
@@ -94,11 +88,7 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
 // @route DELETE /api/v1/courses/:id
 // @access Private
 exports.deleteCourse = asyncHandler(async (req, res, next) => {
-  const course = await Course.findById(req.params.id);
-
-  if (!course) {
-    return next(new ErrorResponse("No course with this id"), 404);
-  }
+  const course = req.resource;
 
   await course.remove();
 

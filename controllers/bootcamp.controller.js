@@ -1,7 +1,13 @@
-const Bootcamp = require("../models/bootcamp.model");
-const ErrorResponse = require("../utils/ErrorResponse");
-const asyncHandler = require("../middleware/asyncHandler");
-const geocoder = require("../utils/geocoder.utils");
+const Bootcamp = require('../models/bootcamp.model');
+
+const ErrorResponse = require('../utils/ErrorResponse');
+const geocoder = require('../utils/geocoder.utils');
+
+const asyncHandler = require('../middleware/asyncHandler');
+const findResourceById = require('../middleware/findResourceById');
+
+// Load bootcamp by the ID and append to req
+exports.findBootcampById = findResourceById(Bootcamp);
 
 // @desc Get all bootcamps
 // @route GET /api/v1/bootcamps
@@ -13,7 +19,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
   const reqQuery = { ...req.query };
 
   // Fields to exclude
-  const removeFields = ["select", "sort", "page", "limit"];
+  const removeFields = ['select', 'sort', 'page', 'limit'];
 
   // Loop over removeFields and delete them from reqQuery
   removeFields.forEach((param) => delete reqQuery[param]);
@@ -28,20 +34,20 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
   );
 
   // Finding resource
-  query = Bootcamp.find(JSON.parse(queryStr)).populate("courses");
+  query = Bootcamp.find(JSON.parse(queryStr)).populate('courses');
 
   // Select Fields
   if (req.query.select) {
-    const fields = req.query.select.split(",").join(" ");
+    const fields = req.query.select.split(',').join(' ');
     query = query.select(fields);
   }
 
   // Sort
   if (req.query.sort) {
-    const sortBy = req.query.sort.split(",").join(" ");
+    const sortBy = req.query.sort.split(',').join(' ');
     query = query.sort(sortBy);
   } else {
-    query = query.sort("-createdAt");
+    query = query.sort('-createdAt');
   }
 
   // Pagination
@@ -62,14 +68,14 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
   if (endIndex < total) {
     pagination.next = {
       page: page + 1,
-      limit,
+      limit
     };
   }
 
   if (startIndex > 0) {
     pagination.prev = {
       page: page - 1,
-      limit,
+      limit
     };
   }
 
@@ -77,7 +83,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
     success: true,
     count: bootcamps.length,
     pagination,
-    data: bootcamps,
+    data: bootcamps
   });
 });
 
@@ -95,7 +101,7 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    data: bootcamp,
+    data: bootcamp
   });
 });
 
@@ -107,7 +113,7 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
 
   res.status(201).json({
     success: true,
-    data: bootcamp,
+    data: bootcamp
   });
 });
 
@@ -117,7 +123,7 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
-    runValidators: true,
+    runValidators: true
   });
 
   if (!bootcamp) {
@@ -128,7 +134,7 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    data: bootcamp,
+    data: bootcamp
   });
 });
 
@@ -148,7 +154,7 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    data: bootcamp,
+    data: bootcamp
   });
 });
 
@@ -170,13 +176,13 @@ exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
 
   const bootcamps = await Bootcamp.find({
     location: {
-      $geoWithin: { $centerSphere: [[longitude, latitude], radius] },
-    },
+      $geoWithin: { $centerSphere: [[longitude, latitude], radius] }
+    }
   });
 
   res.status(200).json({
     success: true,
     count: bootcamps.length,
-    data: bootcamps,
+    data: bootcamps
   });
 });
