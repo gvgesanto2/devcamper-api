@@ -1,17 +1,19 @@
-const express = require("express");
-const dotenv = require("dotenv");
-const morgan = require("morgan");
-const colors = require("colors");
-const bodyParser = require("body-parser");
-const errorHandler = require("./middleware/errorHandler");
-const connectDB = require("./config/db");
+const path = require('path');
+const express = require('express');
+const dotenv = require('dotenv');
+const morgan = require('morgan');
+const colors = require('colors');
+const fileupload = require('express-fileupload');
+const bodyParser = require('body-parser');
+const errorHandler = require('./middleware/errorHandler');
+const connectDB = require('./config/db');
 
 // Load env vars
-dotenv.config({ path: "./config/config.env" });
+dotenv.config({ path: './config/config.env' });
 
 // Route files
-const bootcampRouter = require("./routes/bootcamp.routes");
-const courseRouter = require("./routes/course.routes");
+const bootcampRouter = require('./routes/bootcamp.routes');
+const courseRouter = require('./routes/course.routes');
 
 // Conenct to database
 connectDB();
@@ -22,13 +24,19 @@ const app = express();
 app.use(bodyParser.json());
 
 // Dev logging middleware
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
 }
 
+// File uploading
+app.use(fileupload());
+
+// Set static folder
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Mount routers
-app.use("/api/v1/bootcamps", bootcampRouter);
-app.use("/api/v1/courses", courseRouter);
+app.use('/api/v1/bootcamps', bootcampRouter);
+app.use('/api/v1/courses', courseRouter);
 
 app.use(errorHandler);
 
@@ -41,7 +49,7 @@ const server = app.listen(PORT, () => {
 });
 
 // Handle unhandled promise rejections
-process.on("unhandledRejection", (err, promise) => {
+process.on('unhandledRejection', (err, promise) => {
   console.log(`Error: ${err.message}`);
 
   // Close server & exit process
