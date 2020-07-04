@@ -44,13 +44,8 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
 // @route POST /api/v1/bootcamps/:bootcampId/courses
 // @access Private
 exports.addCourse = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findById(req.params.bootcampId);
-
-  if (!bootcamp) {
-    return next(new ErrorResponse('No bootcamp with this id'), 404);
-  }
-
   req.body.bootcamp = req.params.bootcampId;
+  req.body.user = req.user.id;
 
   const course = await Course.create(req.body);
 

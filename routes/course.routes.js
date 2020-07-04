@@ -9,6 +9,8 @@ const {
   deleteCourse
 } = require('../controllers/course.controller');
 
+const { protect, authorize, requireOwnership } = require('../middleware/auth');
+
 const Course = require('../models/course.model');
 const advancedResults = require('../middleware/advancedResults');
 
@@ -23,9 +25,18 @@ router
     }),
     getCourses
   )
-  .post(addCourse);
+  .post(protect, authorize('publisher', 'admin'), requireOwnership, addCourse);
 
-router.route('/:id').get(getCourse).put(updateCourse).delete(deleteCourse);
+router
+  .route('/:id')
+  .get(getCourse)
+  .put(protect, authorize('publisher', 'admin'), requireOwnership, updateCourse)
+  .delete(
+    protect,
+    authorize('publisher', 'admin'),
+    requireOwnership,
+    deleteCourse
+  );
 
 router.param('id', courseById);
 

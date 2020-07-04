@@ -27,3 +27,31 @@ exports.protect = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Not authorized to access this route', 401));
   }
 });
+
+exports.authorize = (...roles) => (req, res, next) => {
+  if (!roles.includes(req.user.role)) {
+    return next(
+      new ErrorResponse(
+        `User role ${req.user.role} is not authorized to access this route`,
+        403
+      )
+    );
+  }
+  next();
+};
+
+exports.requireOwnership = (req, res, next) => {
+  const resource = req.resource;
+
+  // Make sure user is resource owner
+  if (resource.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to complete this action over this resource`,
+        401
+      )
+    );
+  }
+
+  next();
+};
