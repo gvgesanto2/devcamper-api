@@ -20,13 +20,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
 // @route GET /api/v1/bootcamps/:id
 // @access Public
 exports.getBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findById(req.params.id);
-
-  if (!bootcamp) {
-    return next(
-      new ErrorResponse(`No bootcamp with the id of ${req.params.id}`, 404)
-    );
-  }
+  const bootcamp = req.resource;
 
   res.status(200).json({
     success: true,
@@ -93,11 +87,11 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
   //   );
   // }
 
-  bootcamp.remove();
+  await bootcamp.remove();
 
   res.status(200).json({
     success: true,
-    data: bootcamp
+    data: {}
   });
 });
 
