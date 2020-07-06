@@ -4,11 +4,14 @@ const Review = require('../models/review.model');
 const Bootcamp = require('../models/bootcamp.model');
 const findResourceById = require('../middleware/findResourceById');
 
-// Load bootcamp by the ID and append to req
+// Load review by the ID and append to req
 exports.findReviewById = findResourceById(Review, {
   path: 'bootcamp',
   select: 'name description'
 });
+
+// Load bootcamp by the ID and append to req
+exports.findBootcampById = findResourceById(Bootcamp);
 
 // @desc Get reviews
 // @route GET /api/v1/reviews
@@ -35,6 +38,21 @@ exports.getReview = asyncHandler(async (req, res, next) => {
   const review = req.resource;
 
   res.status(200).json({
+    success: true,
+    data: review
+  });
+});
+
+// @desc Add review
+// @route POST /api/v1/bootcamps/:bootcampId/reviews
+// @access Private
+exports.addReview = asyncHandler(async (req, res, next) => {
+  req.body.bootcamp = req.params.bootcampId;
+  req.body.user = req.user.id;
+
+  const review = await Review.create(req.body);
+
+  res.status(201).json({
     success: true,
     data: review
   });
