@@ -16,6 +16,7 @@ dotenv.config({ path: './config/config.env' });
 const bootcampRouter = require('./routes/bootcamp.routes');
 const courseRouter = require('./routes/course.routes');
 const userRouter = require('./routes/user.routes');
+const reviewRouter = require('./routes/review.routes');
 const authRouter = require('./routes/auth.routes');
 
 // Conenct to database
@@ -44,6 +45,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/v1/bootcamps', bootcampRouter);
 app.use('/api/v1/courses', courseRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/auth', authRouter);
 
 app.use(errorHandler);
