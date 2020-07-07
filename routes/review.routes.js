@@ -4,7 +4,9 @@ const {
   findBootcampById,
   getReviews,
   getReview,
-  addReview
+  addReview,
+  updateReview,
+  deleteReview
 } = require('../controllers/review.controller');
 
 const Review = require('../models/review.model');
@@ -25,7 +27,11 @@ router
   )
   .post(protect, authorize('user', 'admin'), addReview);
 
-router.route('/:id').get(getReview);
+router
+  .route('/:id')
+  .get(getReview)
+  .put(protect, authorize('user', 'admin'), requireOwnership, updateReview)
+  .delete(protect, authorize('user', 'admin'), requireOwnership, deleteReview);
 
 router.param('bootcampId', findBootcampById);
 router.param('id', findReviewById);
